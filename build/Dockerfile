@@ -41,7 +41,6 @@ LABEL org.opencontainers.image.title="Gotenberg $APP_NAME" \
 
 USER root
 
-# TODO: add your instructions.
 ARG GHOSTSCRIPT_VERSION
 RUN apt update && apt install -y build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
 RUN \
@@ -50,11 +49,18 @@ RUN \
   cd ghostscript-$GHOSTSCRIPT_VERSION &&\
   ./configure --without-x &&\
   make -j$(nproc) &&\
-  make install
+  make install &&\
+  cp -r ./iccprofiles /usr/local/share/ghostscript/ &&\
+  sed -i 's/srgb.icc/\/usr\/local\/share\/ghostscript\/iccprofiles\/srgb.icc/g' /usr/local/share/ghostscript/$GHOSTSCRIPT_VERSION/lib/PDFA_def.ps
+RUN \
+    rm -fr ghostscript-$GHOSTSCRIPT_VERSION ghostscript.tar.gz &&\
+    apt purge -y build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
 
 # Copy the Gotenberg binary from the builder stage.
 COPY --from=builder /home/gotenberg /usr/bin/
 
 ENV GHOSTSCRIPT_BIN_PATH /usr/local/bin/gs
+ENV GHOSTSCRIPT_LIB_PATH /usr/local/share/ghostscript/$GHOSTSCRIPT_VERSION/lib
+ENV GHOSTSCRIPT_ICC_RGB_PATH /usr/local/share/ghostscript/iccprofiles/srgb.icc
 
 USER gotenberg

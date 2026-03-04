@@ -19,6 +19,8 @@ func init() {
 // interface.
 type Ghostscript struct {
 	binPath string
+	libPath string
+	iccRgbPath string
 }
 
 // Descriptor returns a [Ghostscript]'s module descriptor.
@@ -36,7 +38,19 @@ func (engine *Ghostscript) Provision(ctx *gotenberg.Context) error {
 		return errors.New("GHOSTSCRIPT_BIN_PATH environment variable is not set")
 	}
 
+	libPath, ok := os.LookupEnv("GHOSTSCRIPT_LIB_PATH")
+	if !ok {
+		return errors.New("GHOSTSCRIPT_LIB_PATH environment variable is not set")
+	}
+
+	iccRgbPath, ok := os.LookupEnv("GHOSTSCRIPT_ICC_RGB_PATH")
+	if !ok {
+		return errors.New("GHOSTSCRIPT_ICC_RGB_PATH environment variable is not set")
+	}
+
 	engine.binPath = binPath
+	engine.libPath = libPath
+	engine.iccRgbPath = iccRgbPath
 
 	return nil
 }
@@ -69,7 +83,7 @@ func (engine *Ghostscript) Validate() error {
 
 // Split splits a given PDF file.
 func (engine *Ghostscript) Split(ctx context.Context, logger *zap.Logger, mode gotenberg.SplitMode, inputPath, outputDirPath string) ([]string, error) {
-	return nil, fmt.Errorf("splt PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+	return nil, fmt.Errorf("split PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // Merge combines multiple PDFs into a single PDF.
@@ -127,10 +141,12 @@ func (engine *Ghostscript) Convert(ctx context.Context, logger *zap.Logger, form
     args = append(args, fmt.Sprintf("-dPDFA=%s", pdfALevel))
     args = append(args, "-dBATCH")
     args = append(args, "-dNOPAUSE")
-    args = append(args, "-sColorConversionStrategy=UseDeviceIndependentColor")
     args = append(args, "-sDEVICE=pdfwrite")
+    args = append(args, "-sColorConversionStrategy=RGB")
     args = append(args, "-dPDFACompatibilityPolicy=1")
+    args = append(args, fmt.Sprintf("--permit-file-read=%s", engine.iccRgbPath))
     args = append(args, fmt.Sprintf("-sOutputFile=%s", outputPath))
+    args = append(args, fmt.Sprintf("%s/PDFA_def.ps", engine.libPath))
     args = append(args, inputPath)
 
     cmd, err := gotenberg.CommandContext(ctx, logger, engine.binPath, args...)

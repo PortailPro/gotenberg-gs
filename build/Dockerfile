@@ -42,8 +42,19 @@ LABEL org.opencontainers.image.title="Gotenberg $APP_NAME" \
 USER root
 
 # TODO: add your instructions.
+ARG GHOSTSCRIPT_VERSION
+RUN apt update && apt install -y build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
+RUN \
+  wget -O ghostscript.tar.gz "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/ghostscript-$GHOSTSCRIPT_VERSION.tar.gz"  &&\
+  tar -zxvf ghostscript.tar.gz &&\
+  cd ghostscript-$GHOSTSCRIPT_VERSION &&\
+  ./configure --without-x &&\
+  make -j$(nproc) &&\
+  make install
 
 # Copy the Gotenberg binary from the builder stage.
 COPY --from=builder /home/gotenberg /usr/bin/
+
+ENV GHOSTSCRIPT_BIN_PATH /usr/local/bin/gs
 
 USER gotenberg

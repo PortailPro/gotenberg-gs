@@ -1,6 +1,4 @@
-module github.com/gotenberg/gotenberg-template-repository
-
-// TODO: change module name.
+module github.com/PortailPro/gotenberg-gs
 
 go 1.26.0
 

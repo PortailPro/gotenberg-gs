@@ -4,9 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
-
-	"go.uber.org/zap"
 
 	"github.com/gotenberg/gotenberg/v8/pkg/gotenberg"
 )
@@ -82,12 +81,12 @@ func (engine *Ghostscript) Validate() error {
 // }
 
 // Split splits a given PDF file.
-func (engine *Ghostscript) Split(ctx context.Context, logger *zap.Logger, mode gotenberg.SplitMode, inputPath, outputDirPath string) ([]string, error) {
+func (engine *Ghostscript) Split(ctx context.Context, logger *slog.Logger, mode gotenberg.SplitMode, inputPath, outputDirPath string) ([]string, error) {
 	return nil, fmt.Errorf("split PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // Merge combines multiple PDFs into a single PDF.
-func (engine *Ghostscript) Merge(ctx context.Context, logger *zap.Logger, inputPaths []string, outputPath string) error {
+func (engine *Ghostscript) Merge(ctx context.Context, logger *slog.Logger, inputPaths []string, outputPath string) error {
 	var args []string
     args = append(args, "-dBATCH")
     args = append(args, "-dNOPAUSE")
@@ -118,12 +117,12 @@ func (engine *Ghostscript) Merge(ctx context.Context, logger *zap.Logger, inputP
 }
 
 // Flatten is not available in this implementation.
-func (engine *Ghostscript) Flatten(ctx context.Context, logger *zap.Logger, inputPath string) error {
+func (engine *Ghostscript) Flatten(ctx context.Context, logger *slog.Logger, inputPath string) error {
 	return fmt.Errorf("flatten PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // Convert is not available in this implementation.
-func (engine *Ghostscript) Convert(ctx context.Context, logger *zap.Logger, formats gotenberg.PdfFormats, inputPath, outputPath string) error {
+func (engine *Ghostscript) Convert(ctx context.Context, logger *slog.Logger, formats gotenberg.PdfFormats, inputPath, outputPath string) error {
 	var pdfALevel string
 
     switch formats.PdfA {
@@ -171,23 +170,73 @@ func (engine *Ghostscript) Convert(ctx context.Context, logger *zap.Logger, form
 }
 
 // ReadMetadata is not available in this implementation.
-func (engine *Ghostscript) ReadMetadata(ctx context.Context, logger *zap.Logger, inputPath string) (map[string]any, error) {
+func (engine *Ghostscript) ReadMetadata(ctx context.Context, logger *slog.Logger, inputPath string) (map[string]any, error) {
 	return nil, fmt.Errorf("read PDF metadata with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // WriteMetadata is not available in this implementation.
-func (engine *Ghostscript) WriteMetadata(ctx context.Context, logger *zap.Logger, metadata map[string]any, inputPath string) error {
+func (engine *Ghostscript) WriteMetadata(ctx context.Context, logger *slog.Logger, metadata map[string]any, inputPath string) error {
 	return fmt.Errorf("write PDF metadata with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // Encrypt adds password protection to a PDF file using Ghostscript.
-func (engine *Ghostscript) Encrypt(ctx context.Context, logger *zap.Logger, inputPath, userPassword, ownerPassword string) error {
+func (engine *Ghostscript) Encrypt(ctx context.Context, logger *slog.Logger, inputPath string, opts gotenberg.EncryptOptions) error {
 	return fmt.Errorf("encrypt PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // EmbedFiles is not available in this implementation.
-func (engine *Ghostscript) EmbedFiles(ctx context.Context, logger *zap.Logger, filePaths []string, inputPath string) error {
+func (engine *Ghostscript) EmbedFiles(ctx context.Context, logger *slog.Logger, filePaths []string, inputPath string) error {
 	return fmt.Errorf("embed files with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// EmbedFilesMetadata is not available in this implementation.
+func (engine *Ghostscript) EmbedFilesMetadata(ctx context.Context, logger *slog.Logger, metadata map[string]map[string]string, inputPath string) error {
+	return fmt.Errorf("embed files metadata with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// OptimizeImages is not available in this implementation.
+func (engine *Ghostscript) OptimizeImages(ctx context.Context, logger *slog.Logger, imageQuality int, inputPath string) error {
+	return fmt.Errorf("optimize images with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// PageCount is not available in this implementation.
+func (engine *Ghostscript) PageCount(ctx context.Context, logger *slog.Logger, inputPath string) (int, error) {
+	return 0, fmt.Errorf("count PDF pages with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// ReadBookmarks is not available in this implementation.
+func (engine *Ghostscript) ReadBookmarks(ctx context.Context, logger *slog.Logger, inputPath string) ([]gotenberg.Bookmark, error) {
+	return nil, fmt.Errorf("read PDF bookmarks with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// WriteBookmarks is not available in this implementation.
+func (engine *Ghostscript) WriteBookmarks(ctx context.Context, logger *slog.Logger, inputPath string, bookmarks []gotenberg.Bookmark) error {
+	return fmt.Errorf("write PDF bookmarks with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// Watermark is not available in this implementation.
+func (engine *Ghostscript) Watermark(ctx context.Context, logger *slog.Logger, inputPath string, stamp gotenberg.Stamp) error {
+	return fmt.Errorf("watermark PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// Stamp is not available in this implementation.
+func (engine *Ghostscript) Stamp(ctx context.Context, logger *slog.Logger, inputPath string, stamp gotenberg.Stamp) error {
+	return fmt.Errorf("stamp PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// Rotate is not available in this implementation.
+func (engine *Ghostscript) Rotate(ctx context.Context, logger *slog.Logger, inputPath string, angle int, pages string) error {
+	return fmt.Errorf("rotate PDF with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// InjectFacturXXMP is not available in this implementation.
+func (engine *Ghostscript) InjectFacturXXMP(ctx context.Context, logger *slog.Logger, facturX gotenberg.FacturX, inputPath string) error {
+	return fmt.Errorf("inject Factur-X XMP with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
+}
+
+// ReadPdfAConformance is not available in this implementation.
+func (engine *Ghostscript) ReadPdfAConformance(ctx context.Context, logger *slog.Logger, inputPath string) (string, string, error) {
+	return "", "", fmt.Errorf("read PDF/A conformance with Ghostscript: %w", gotenberg.ErrPdfEngineMethodNotSupported)
 }
 
 // var (

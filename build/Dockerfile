@@ -42,7 +42,7 @@ LABEL org.opencontainers.image.title="Gotenberg $APP_NAME" \
 USER root
 
 ARG GHOSTSCRIPT_VERSION
-RUN apt update && apt install -y build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
+RUN apt update && apt install -y wget build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
 RUN \
   wget -O ghostscript.tar.gz "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/ghostscript-$GHOSTSCRIPT_VERSION.tar.gz"  &&\
   tar -zxvf ghostscript.tar.gz &&\
@@ -54,7 +54,7 @@ RUN \
   sed -i 's/srgb.icc/\/usr\/local\/share\/ghostscript\/iccprofiles\/srgb.icc/g' /usr/local/share/ghostscript/$GHOSTSCRIPT_VERSION/lib/PDFA_def.ps
 RUN \
     rm -fr ghostscript-$GHOSTSCRIPT_VERSION ghostscript.tar.gz &&\
-    apt purge -y build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
+    apt purge -y wget build-essential git libjpeg-dev libpng-dev libtiff-dev zlib1g-dev libfreetype6-dev libfontconfig1-dev libcupsimage2-dev libgtk-3-dev libidn11-dev libpaper-dev
 
 # Copy the Gotenberg binary from the builder stage.
 COPY --from=builder /home/gotenberg /usr/bin/
